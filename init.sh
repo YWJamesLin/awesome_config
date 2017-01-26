@@ -8,7 +8,7 @@ git clone https://github.com/YWJamesLin/awesome_battery_widget
 
 # Global Init
 sudo mkdir /usr/share/awesome/themes/customTheme
-cp -a awesome_config/theme.lua /usr/share/awesome/themes/customTheme/
+sudo cp -a awesome_config/theme.lua /usr/share/awesome/themes/customTheme/
 sudo mkdir /usr/share/awesome/themes/customTheme/wallpapers
 
 # User Init
