@@ -213,11 +213,10 @@ end
 wp_index = 1
 wp_timeout  = 300
 wp_path = awful.util.get_themes_dir() .. "customTheme/wallpapers/"
-wp_filter = function(s) return string.match(s,"%.png$") or string.match(s,"%.jpg$") or string.match(s,"%.bmp$") end
-wp_files = scandir(wp_path, wp_filter)
+wp_files = scandir(wp_path)
  
 -- setup the timer
-if not #wp_files == 0 then
+if #wp_files ~= 0 then
   wp_timer = timer { timeout = wp_timeout }
   wp_timer:connect_signal("timeout", function()
     -- set wallpaper to current index for all screens
