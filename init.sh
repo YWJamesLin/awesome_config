@@ -3,7 +3,7 @@
 # 2015.12.20 Created By YWJamesLin
 
 # Fetch Source
-#git clone https://github.com/YWJamesLin/awesome_config
+git clone https://github.com/YWJamesLin/awesome_config
 git clone https://github.com/YWJamesLin/awesome_battery_widget
 
 # Global Init
