@@ -195,12 +195,12 @@ local tasklist_buttons = awful.util.table.join(
 -- {{{ Wallpaper
 -- scan directory, and optionally filter outputs
 function scandir(directory, filter)
-    local i, t, popen = 0, {}, io.popen
+    local i, t, popen = -1, {}, io.popen
     if not filter then
         filter = function(s) return true end
     end
     print(filter)
-    for filename in popen('ls -a "'..directory..'"'):lines() do
+    for filename in popen('ls "'..directory..'"'):lines() do
         if filter(filename) then
             i = i + 1
             t[i] = filename
@@ -210,7 +210,7 @@ function scandir(directory, filter)
 end
 
 -- configuration - edit to your liking
-wp_index = 1
+wp_index = 0
 wp_timeout  = 300
 wp_path = awful.util.get_themes_dir() .. "customTheme/wallpapers/"
 wp_files = scandir(wp_path)
@@ -228,7 +228,7 @@ if #wp_files ~= 0 then
     wp_timer:stop()
  
     -- get next random index
-    wp_index = math.random( 1, #wp_files)
+    wp_index = math.random( 0, #wp_files)
  
     --restart the timer
     wp_timer.timeout = wp_timeout
