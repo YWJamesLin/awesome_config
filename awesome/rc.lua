@@ -11,7 +11,8 @@ local naughty = require("naughty")
 local menubar = require("menubar")
 local battery = require("battery")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
-os.setlocale(os.getenv("LC_ALL"))
+os.setlocale (os.getenv ("LC_ALL"))
+math.randomseed (os.time ())
 
 -- {{{ Error handling
 -- Check if awesome encountered an error during startup and fell back to
@@ -46,7 +47,7 @@ beautiful.init(awful.util.get_themes_dir() .. "customTheme/theme.lua")
 terminal = "lxterminal"
 editor = os.getenv("EDITOR") or "vim"
 fm = "pcmanfm"
-snapshot = "spectacle"
+snapshot = "xfce4-screenshooter"
 editor_cmd = terminal .. " -e " .. editor
 
 -- Default modkey.
@@ -210,15 +211,20 @@ function scandir(directory, filter)
 end
 
 -- configuration - edit to your liking
-wp_index = 0
 wp_timeout  = 300
 wp_path = awful.util.get_themes_dir() .. "customTheme/wallpapers/"
 wp_files = scandir(wp_path)
  
 -- setup the timer
 if #wp_files ~= 0 then
+  -- set the first random wallpaper
+  wp_index = math.random (0, #wp_files)
+
   wp_timer = timer { timeout = wp_timeout }
   wp_timer:connect_signal("timeout", function()
+    -- get random index of this time
+    wp_index = math.random (0, #wp_files)
+
     -- set wallpaper to current index for all screens
     for s = 1, screen.count() do
         gears.wallpaper.maximized(wp_path .. wp_files[wp_index], s, true)
@@ -226,9 +232,6 @@ if #wp_files ~= 0 then
  
     -- stop the timer (we don't need multiple instances running at the same time)
     wp_timer:stop()
- 
-    -- get next random index
-    wp_index = math.random( 0, #wp_files)
  
     --restart the timer
     wp_timer.timeout = wp_timeout
@@ -242,7 +245,7 @@ end
 local function set_wallpaper(s)
     -- Wallpaper
     if beautiful.wallpaper then
-        local wallpaper = beautiful.wallpaper
+        local wallpaper = wp_path .. wp_files[wp_index]
         -- If wallpaper is a function, call it with the screen
         if type(wallpaper) == "function" then
             wallpaper = wallpaper(s)
