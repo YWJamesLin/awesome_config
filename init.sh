@@ -10,6 +10,7 @@ git clone https://github.com/YWJamesLin/awesome_battery_widget
 sudo mkdir /usr/share/awesome/themes/customTheme
 sudo cp -a awesome_config/theme.lua /usr/share/awesome/themes/customTheme/
 sudo mkdir /usr/share/awesome/themes/customTheme/wallpapers
+sudo mkdir /usr/share/awesome/themes/customTheme/wallpapers_vert
 
 # User Init
 mkdir -p ~/.config/awesome
