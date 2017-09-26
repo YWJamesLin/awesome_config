@@ -212,54 +212,68 @@ end
 
 -- configuration - edit to your liking
 wp_timeout  = 300
+
 wp_path = awful.util.get_themes_dir() .. "customTheme/wallpapers/"
 wp_files = scandir(wp_path)
- 
--- setup the timer
-if #wp_files ~= 0 then
-  -- set the first random wallpaper
-  wp_index = math.random (0, #wp_files)
+wp_index = 0
 
-  wp_timer = timer { timeout = wp_timeout }
-  wp_timer:connect_signal("timeout", function()
-    -- get random index of this time
+wp_path_vert = awful.util.get_themes_dir() .. "customTheme/wallpapers_vert/"
+wp_files_vert = scandir(wp_path_vert)
+wp_index_vert = 0
+
+local function refresh_index ()
     wp_index = math.random (0, #wp_files)
+    wp_index_vert = math.random (0, #wp_files_vert)
+end
 
-    -- set wallpaper to current index for all screens
-    for s = 1, screen.count() do
+local function set_wallpaper (s)
+    local switch = {
+        [1] = function ()
+            gears.wallpaper.fit(wp_path_vert .. wp_files_vert[wp_index_vert], s)
+        end,
+        [2] = function ()
+            gears.wallpaper.fit(wp_path .. wp_files[wp_index], s)
+        end
+    }
+    local f = switch[s]
+    
+    if f then
+        f()
+    else
         gears.wallpaper.maximized(wp_path .. wp_files[wp_index], s, true)
     end
+end
+
+local function set_all_wallpapers ()
+    for s = 1, screen.count () do
+        set_wallpaper(s)
+    end
+end
+
+-- setup the timer
+if #wp_files ~= -1 and #wp_files_vert ~= -1 then
+  -- set the first random wallpaper
+  wp_timer = timer { timeout = 0 }
+  wp_timer:connect_signal("timeout", function()
+      refresh_index ()
+      set_all_wallpapers ()
  
-    -- stop the timer (we don't need multiple instances running at the same time)
-    wp_timer:stop()
+      -- stop the timer (we don't need multiple instances running at the same time)
+      wp_timer:stop()
  
-    --restart the timer
-    wp_timer.timeout = wp_timeout
-    wp_timer:start()
+      --restart the timer
+      wp_timer.timeout = wp_timeout
+      wp_timer:start()
   end)
  
   -- initial start when rc.lua is first run
   wp_timer:start()
 end
 
-local function set_wallpaper(s)
-    -- Wallpaper
-    if beautiful.wallpaper then
-        local wallpaper = wp_path .. wp_files[wp_index]
-        -- If wallpaper is a function, call it with the screen
-        if type(wallpaper) == "function" then
-            wallpaper = wallpaper(s)
-        end
-        gears.wallpaper.maximized(wallpaper, s, true)
-    end
-end
-
 -- Re-set wallpaper when a screen's geometry changes (e.g. different resolution)
-screen.connect_signal("property::geometry", set_wallpaper)
+screen.connect_signal("property::geometry", set_all_wallpapers)
 
-awful.screen.connect_for_each_screen(function(s)
-    -- Wallpaper
-    set_wallpaper(s)
+    awful.screen.connect_for_each_screen(function(s)
 
     -- Each screen has its own tag table.
     awful.tag({ '子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥' }, s, awful.layout.layouts[2])
@@ -415,7 +429,18 @@ globalkeys = awful.util.table.join(
               {description = "lua execute prompt", group = "awesome"}),
     -- Menubar
     awful.key({ modkey }, "p", function() menubar.show() end,
-              {description = "show the menubar", group = "launcher"})
+              {description = "show the menubar", group = "launcher"}),
+    -- Wallpaper change function
+    awful.key({ modkey,           }, "[", function ()
+        refresh_index ()
+        set_wallpaper(2)
+    end,
+              {description = "change wallpaper 2", group = "wallpaper"}),
+    awful.key({ modkey,           }, "]", function ()
+        refresh_index ()
+        set_wallpaper(1)
+    end,
+              {description = "change wallpaper", group = "wallpaper"})
 )
 
 clientkeys = awful.util.table.join(
