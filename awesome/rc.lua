@@ -201,7 +201,7 @@ function scandir(directory, filter)
         filter = function(s) return true end
     end
     print(filter)
-    for filename in popen('ls "'..directory..'"'):lines() do
+    for filename in popen('find "' .. directory .. '" -type f'):lines() do
         if filter(filename) then
             i = i + 1
             t[i] = filename
@@ -229,10 +229,10 @@ end
 local function set_wallpaper (s)
     local switch = {
         [1] = function ()
-            gears.wallpaper.fit(wp_path_vert .. wp_files_vert[wp_index_vert], s)
+            gears.wallpaper.fit(wp_files[wp_index], s)
         end,
         [2] = function ()
-            gears.wallpaper.fit(wp_path .. wp_files[wp_index], s)
+            gears.wallpaper.fit(wp_files_vert[wp_index_vert], s)
         end
     }
     local f = switch[s]
@@ -240,7 +240,7 @@ local function set_wallpaper (s)
     if f then
         f()
     else
-        gears.wallpaper.maximized(wp_path .. wp_files[wp_index], s, true)
+        gears.wallpaper.maximized(wp_files[wp_index], s, true)
     end
 end
 
@@ -433,12 +433,12 @@ globalkeys = awful.util.table.join(
     -- Wallpaper change function
     awful.key({ modkey,           }, "[", function ()
         refresh_index ()
-        set_wallpaper(2)
+        set_wallpaper(1)
     end,
               {description = "change wallpaper 2", group = "wallpaper"}),
     awful.key({ modkey,           }, "]", function ()
         refresh_index ()
-        set_wallpaper(1)
+        set_wallpaper(2)
     end,
               {description = "change wallpaper", group = "wallpaper"})
 )
