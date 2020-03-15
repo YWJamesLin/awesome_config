@@ -10,6 +10,7 @@ local beautiful = require("beautiful")
 local naughty = require("naughty")
 local menubar = require("menubar")
 local battery = require("battery")
+local temperature = require("temperature")
 local hotkeys_popup = require("awful.hotkeys_popup").widget
 os.setlocale (os.getenv ("LC_ALL"))
 math.randomseed (os.time ())
@@ -149,6 +150,19 @@ mybattery_timer:connect_signal("timeout", function()
     mybattery:set_text(batteryInfo("BAT0"))
 end)
 mybattery_timer:start()
+
+-- Create a temperature widget
+mytemperature = wibox.widget.textbox()
+
+-- temperature Widget Initialize
+mytemperature:set_text (temperatureInfo())
+
+-- temperature Widget Timer
+mytemperature_timer = timer({timeout = 1})
+mytemperature_timer:connect_signal("timeout", function()
+    mytemperature:set_text(temperatureInfo())
+end)
+mytemperature_timer:start()
 
 -- Create a wibox for each screen and add it
 local taglist_buttons = awful.util.table.join(
@@ -312,6 +326,7 @@ screen.connect_signal("property::geometry", set_all_wallpapers)
             mykeyboardlayout,
             wibox.widget.systray(),
             mybattery,
+            mytemperature,
             mytextclock,
             s.mylayoutbox,
         },
