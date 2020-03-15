@@ -45,32 +45,35 @@ function batteryInfo (adapter)
         end
       end
 
-      -- common variables to calculate available time and watt
-      local current = readFirstFile (adapter, "current_now") / 1000
-      local voltage = readFirstFile (adapter, "voltage_now") / 1000
+      if showAvailable or showPower then
+        -- common variables to calculate available time and watt
+        --
+        local current = readFirstFile (adapter, "current_now") / 1000
+        local voltage = readFirstFile (adapter, "voltage_now") / 1000
 
-      if showAvailable then
-        local fill
-        if sta:match ("Charging") then
-          fill = readFirstFile (adapter, "charge_full") - readFirstFile (adapter, "charge_now");
-        elseif sta:match ("Discharging") then
-          fill = readFirstFile (adapter, "charge_now", "energy_now")
+        if showAvailable then
+          local fill
+          if sta:match ("Charging") then
+            fill = readFirstFile (adapter, "charge_full") - readFirstFile (adapter, "charge_now");
+          elseif sta:match ("Discharging") then
+            fill = readFirstFile (adapter, "charge_now", "energy_now")
+          end
+          local seconds = 36. * fill / 10 / current
+          local hr = math.floor (seconds / 3600)
+          local min = math.floor (seconds % 3600 / 60)
+          local zero
+          if min < 10 then 
+            zero = "0"
+          else
+            zero = ""
+          end
+          retString = retString .. "[ " .. hr .. ":" .. zero .. min .. " ] "
         end
-        local seconds = 36. * fill / 10 / current
-        local hr = math.floor (seconds / 3600)
-        local min = math.floor (seconds % 3600 / 60)
-        local zero
-        if min < 10 then 
-          zero = "0"
-        else
-          zero = ""
-        end
-        retString = retString .. "[ " .. hr .. ":" .. zero .. min .. " ] "
-      end
 
-      if showPower then
-        local power = math.floor (current * voltage / 100000) / 10
-        retString = retString .. power  .. "W "
+        if showPower then
+          local power = math.floor (current * voltage / 100000) / 10
+          retString = retString .. power  .. "W "
+        end
       end
 
       return retString
