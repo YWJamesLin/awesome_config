@@ -48,17 +48,17 @@ function batteryInfo (adapter)
       if showAvailable or showPower then
         -- common variables to calculate available time and watt
         --
-        local current = readFirstFile (adapter, "current_now") / 1000
-        local voltage = readFirstFile (adapter, "voltage_now") / 1000
+        local power = readFirstFile (adapter, "power_now") / 1000
+        --local voltage = readFirstFile (adapter, "voltage_now") / 1000
 
         if showAvailable then
           local fill
           if sta:match ("Charging") then
-            fill = readFirstFile (adapter, "charge_full") - readFirstFile (adapter, "charge_now");
+            fill = readFirstFile (adapter, "energy_full") - readFirstFile (adapter, "energy_now");
           elseif sta:match ("Discharging") then
-            fill = readFirstFile (adapter, "charge_now", "energy_now")
+            fill = readFirstFile (adapter, "energy_now")
           end
-          local seconds = 36. * fill / 10 / current
+          local seconds = 36. * fill / 10 / power
           local hr = math.floor (seconds / 3600)
           local min = math.floor (seconds % 3600 / 60)
           local zero
@@ -71,7 +71,7 @@ function batteryInfo (adapter)
         end
 
         if showPower then
-          local power = math.floor (current * voltage / 100000) / 10
+          local power = power / 1000
           retString = retString .. power  .. "W "
         end
       end
